@@ -1,5 +1,9 @@
-# Command Line Pente Game
-# Author: Javeria Khan
+####################################################################
+#                                                                  #
+# Command Line Pente Game                                          #
+# Author: Javeria Khan 06/11/16                                    #
+#                                                                  #
+####################################################################
 
 import os
 import sys
@@ -8,7 +12,6 @@ import random
 
 # Draw 15x15 Pente Board
 def DrawBoard(rowNumber = 3,colNumber = 3):
-    #global Board
     os.system('clear')
 
     print '   ',
@@ -37,24 +40,27 @@ def DrawBoard(rowNumber = 3,colNumber = 3):
         print '  ',
         print("+---"*colNumber+"+")
 
-    #Print Moves History
+    #Print Mmves history for both players
     print "\nMoves by X:"
     for move in X_moves:
-        print "(%s) "%move,
+        print('\x1b[1;32;40m'+"(%s) "%move+'\x1b[0m'),
 
     print "\n\nMoves by O:"
     for move in O_moves:
-        print "(%s) "%move,
+        print('\x1b[1;31;40m'+"(%s) "%move+'\x1b[0m'),
 
     return
 
 def O_play():
+  # First play - pick a random place
    x_cor = random.randint(1,15)
    y_cor = random.randint(1,15)
 
-   #log all valid moves for player-X
+   #log all valid moves for player-O
    O_moves.append(str(x_cor)+','+str(y_cor))
    Board[x_cor-1][y_cor-1] = 'O'
+
+   return
 
 if __name__ == "__main__":
 
@@ -66,6 +72,12 @@ if __name__ == "__main__":
     #Maintaining history for valid player moves
     X_moves = []
     O_moves = []
+
+    X_capture_count = 0
+    O_capture_count = 0
+
+    X_max_sequence = 0
+    O_max_sequence = 0
 
     if "x" or "*" in size:
         sizeList = (str(size).replace("x","*")).split("*")
@@ -86,11 +98,15 @@ if __name__ == "__main__":
 
     #Take input
     while True:
-        #Redraw Board
+        #AI Player O
         O_play()
+
+        #Redraw Board
         DrawBoard(rowNumber,colNumber)
         print "\n\nEnter q to quit"
-        coordinates = raw_input("\nPlayer turn. Enter location to place piece (x,y): ")
+
+        # Get Player X input
+        coordinates = raw_input("\nPlayer X turn. Enter location to place piece (x,y): ")
         if coordinates.lower() == 'q':
           print('\x1b[1;31;40m' + '\n\nEnding Game....\n\n' + '\x1b[0m')
           sys.exit(0)
