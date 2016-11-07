@@ -4,6 +4,7 @@
 import os
 import sys
 import re
+import random
 
 # Draw 15x15 Pente Board
 def DrawBoard(rowNumber = 3,colNumber = 3):
@@ -24,7 +25,12 @@ def DrawBoard(rowNumber = 3,colNumber = 3):
         #Print Board pieces
         for piece in range(0,colNumber):
             print "|",
-            print('\x1b[1;32;40m'+"%s"%Board[row-1][piece]+'\x1b[0m'),
+            if Board[row-1][piece] == 'X':
+                print('\x1b[1;32;40m'+"%s"%Board[row-1][piece]+'\x1b[0m'),
+            elif Board[row-1][piece] == 'O':
+                print('\x1b[1;31;40m'+"%s"%Board[row-1][piece]+'\x1b[0m'),
+            else:
+                print('\x1b[1;32;40m'+"%s"%Board[row-1][piece]+'\x1b[0m'),
         print '|'
 
         #Print Horizontal Borders
@@ -36,7 +42,19 @@ def DrawBoard(rowNumber = 3,colNumber = 3):
     for move in X_moves:
         print "(%s) "%move,
 
+    print "\n\nMoves by O:"
+    for move in O_moves:
+        print "(%s) "%move,
+
     return
+
+def O_play():
+   x_cor = random.randint(1,15)
+   y_cor = random.randint(1,15)
+
+   #log all valid moves for player-X
+   O_moves.append(str(x_cor)+','+str(y_cor))
+   Board[x_cor-1][y_cor-1] = 'O'
 
 if __name__ == "__main__":
 
@@ -45,7 +63,9 @@ if __name__ == "__main__":
     sizeList = []
     global Board
 
+    #Maintaining history for valid player moves
     X_moves = []
+    O_moves = []
 
     if "x" or "*" in size:
         sizeList = (str(size).replace("x","*")).split("*")
@@ -63,28 +83,32 @@ if __name__ == "__main__":
     
     # Initialize Board
     Board = [[' ' for i in range(1,rowNumber+1)] for j in range(1,colNumber+1)]
-    
-    DrawBoard(rowNumber,colNumber)
 
     #Take input
     while True:
+        #Redraw Board
+        O_play()
+        DrawBoard(rowNumber,colNumber)
         print "\n\nEnter q to quit"
         coordinates = raw_input("\nPlayer turn. Enter location to place piece (x,y): ")
         if coordinates.lower() == 'q':
           print('\x1b[1;31;40m' + '\n\nEnding Game....\n\n' + '\x1b[0m')
           sys.exit(0)
-        elif re.match("^(a{1,15},a{1,15})$", coordinates, re.M|re.I)
-        else:
-            #log all moves for player-X
-            X_moves.append(coordinates)
+        elif re.match("^[0-9]{1,2},[0-9]{1,2}$", coordinates, re.M|re.I):
 
             #Update Board with X's latest move
             coor_list = (coordinates.split(","))
             x_cor = int(coor_list[0])
             y_cor = int(coor_list[1])
-            Board[x_cor-1][y_cor-1] = 'X'
 
-            #Redraw Board
-            DrawBoard(rowNumber,colNumber)
+            if x_cor < 16 and y_cor < 16:
+                #log all valid moves for player-X
+                X_moves.append(coordinates)
+                Board[x_cor-1][y_cor-1] = 'X'
+            else:
+                raw_input("Input out of range [1-15].. try again...")
+
+        else:
+            raw_input("Invalid Input.. try again...")
 
 
